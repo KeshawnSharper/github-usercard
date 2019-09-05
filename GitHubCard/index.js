@@ -1,14 +1,24 @@
+let cards = document.querySelector(".cards")
 /* Step 1: using axios, send a GET request to the following URL 
            (replacing the palceholder with your Github name):
            https://api.github.com/users/<your name>
 */
-
+axios.get("https://api.github.com/users/KeshawnSharper")
+.then( response => {
+  // deal with the response data in here
+  console.log(response)
+  cards.appendChild(github(response))
+})
+.catch( err => {
+  // deal with the error in here
+})
 /* Step 2: Inspect and study the data coming back, this is YOUR 
    github info! You will need to understand the structure of this 
    data in order to use it to build your component function 
 
    Skip to Step 3.
 */
+
 
 /* Step 4: Pass the data received from Github into your function, 
            create a new component and add it to the DOM as a child of .cards
@@ -24,7 +34,31 @@
           user, and adding that card to the DOM.
 */
 
-const followersArray = [];
+const followersArray = [
+  "tetondan",
+  "dustinmyers",
+  "justsml"
+];
+axios.get(`https://api.github.com/users/KeshawnSharper/followers`)
+.then( response => {
+  // deal with the response data in here
+console.log(response.data)
+ response.data.forEach(i => followersArray.push(i.login))
+ followersArray.forEach(i => {
+  axios.get(`https://api.github.com/users/${i}`)
+.then( response => {
+  // deal with the response data in here
+  cards.appendChild(github(response))
+})
+.catch( err => {
+  // deal with the error in here
+})
+})
+
+})
+.catch( err => {
+  // deal with the error in here
+})
 
 /* Step 3: Create a function that accepts a single object as its only argument,
           Using DOM methods and properties, create a component that will return the following DOM element:
@@ -45,11 +79,61 @@ const followersArray = [];
 </div>
 
 */
+function github (obj){
+  
+  let cardDiv = document.createElement("div")
+cardDiv.classList.add("card")
 
-/* List of LS Instructors Github username's: 
-  tetondan
-  dustinmyers
-  justsml
-  luishrd
-  bigknell
-*/
+  let img = document.createElement("img")
+img.src=obj.data.avatar_url
+
+  let cardInfo = document.createElement("div")
+cardInfo.classList.add("card-info")
+
+  let h3 = document.createElement("h3")
+  h3.classList.add("name")
+  h3.textContent = obj.data.name
+
+  let userName = document.createElement("p")
+  userName.classList.add("username")
+  userName.textContent = obj.data.login
+
+  let location = document.createElement("p")
+  location.textContent = `Location: ${obj.data.location}`
+
+  
+
+  let a = document.createElement("a")
+a.href= obj.data.html_url
+a.textContent = obj.data.html_url
+
+  let profile = document.createElement("p")
+  profile.textContent = `Profile: ${a} `
+
+  let followers = document.createElement("p")
+  followers.textContent = `Followers: ${obj.data.followers}`
+
+  let following = document.createElement("p")
+  following.textContent = `Following: ${obj.data.following}`
+
+  let bio = document.createElement("p")
+  bio.textContent = `Bio: ${obj.data.bio}`
+
+  cardDiv.appendChild(img)
+  cardDiv.appendChild(cardInfo)
+  cardInfo.appendChild(h3)
+  cardInfo.appendChild(userName)
+  cardInfo.appendChild(location)
+  cardInfo.appendChild(profile)
+  cardInfo.appendChild(followers)
+  cardInfo.appendChild(following)
+  cardInfo.appendChild(bio)
+
+obj.data.login == "KeshawnSharper" ? followers.textContent = `Followers: Over 9000 !!!!`: followers.textContent = `Followers: ${obj.data.followers}`
+
+  return cardDiv
+}
+
+
+
+
